@@ -45,6 +45,10 @@ typst init @preview/lightmind:0.1.0
 | `show-code-lang` | 是否显示代码块语言标签 | `true` |
 | `allow-page-breaks` | 是否允许分页；`false` 时输出为无限长单页 | `true` |
 
+## 目录
+
+在文档中插入目录，例如 `#outline(title: "目录")`。目录以柔和底色卡片 + 左侧绿色色条呈现，一级条目加粗、子级弱化并自动缩进，条目带点状引导线与页码，标题自动套用一级标题样式；暗色模式下自动跟随主题。
+
 ## 辅助函数
 
 - `#frontmatter(title: ..., author: ..., date: ..., tags: (...))`：YAML 风格元信息块
@@ -61,6 +65,7 @@ typst init @preview/lightmind:0.1.0
   author: "SunMoonTrain",
   date: "2026-05-06",
   tags: ("theme", "markdown", "demo"),
+  banner: ("cover.png", 150pt),
 )
 
 #quote(attribution: "tip")[ 主色绿。用于实用建议、最佳实践。 ]
@@ -78,4 +83,4 @@ typst init @preview/lightmind:0.1.0
 
 ## 许可证
 
-MIT License，Copyright (c) 2026 SunMoonTrain。
+MIT License，Copyright (c) 2026 Childish_tree。

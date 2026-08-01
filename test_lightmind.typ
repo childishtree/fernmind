@@ -3,7 +3,7 @@
 // ============================================================================
 // lightmind.typ 完整功能测试
 // 改编自 LightMindTheme/showcase/showcase-zh.md
-// 覆盖：frontmatter、标题层级、段落与行内格式、引用块与警告块、
+// 覆盖：frontmatter、目录、标题层级、段落与行内格式、引用块与警告块、
 //       列表（无序/有序/任务）、表格、代码、数学公式、分隔线、图片、脚注、高亮
 // ============================================================================
 
@@ -22,7 +22,11 @@
   author: "SunMoonTrain",
   date: "2026-05-06",
   tags: ("theme", "markdown", "demo"),
+  banner: ("cover.png", 150pt),
 )
+
+// ---------- 目录 ----------
+#outline(title: "目录")
 
 = 引言
 
@@ -268,6 +272,8 @@ $
 
 = 其他（tablem 演示）
 
+类markdown 表格语法：
+
 #tablem()[
   |1|2|3|
   |4|5|6|
@@ -286,4 +292,4 @@ $
 
 那么这个主题已经基本可用了。
 
-#quote[Made with `lightmind.typ` · 山林之间，文字生长。]
+#quote(attribution: [Childish_tree])[Made with `lightmind.typ` · 山林之间，文字生长。]

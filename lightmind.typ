@@ -155,9 +155,16 @@
 #let frontmatter(..args) = context {
   let colors = palette-colors(dark-mode: theme-state.get() == "dark")
   let dict = args.named()
+  
+  // 1. 提取并移除 banner 参数，防止它被打印到 YAML 文本中
+  let banner-data = dict.at("banner", default: none)
+  if banner-data != none {
+    let _ = dict.remove("banner")
+  }
+
   let lines = ("---",)
 
-  // 遍历并格式化传入的参数
+  // 遍历并格式化剩余的参数
   for (k, v) in dict.pairs() {
     let v-str = if type(v) == array {
       "[" + v.join(", ") + "]"
@@ -168,7 +175,20 @@
   }
   lines.push("---")
 
-  // 复刻 pre.md-meta-block 的样式
+  // 2. 渲染顶部横幅 (如果传入了 banner 参数)
+  if banner-data != none {
+    let (img_path, banner_y) = banner-data
+    block(
+      width: 100%,
+      height: banner_y,
+      clip: true,
+      radius: 8pt,                 // 配合主题的圆角设计
+      below: 1.5em,                // 与下方的 YAML 块留出呼吸空间
+      image(img_path, width: 100%, height: 100%, fit: "cover")
+    )
+  }
+
+  // 3. 复刻 pre.md-meta-block 的样式
   block(
     fill: colors.at("bg-soft"), // var(--bg-soft)
     stroke: (paint: colors.at("accent").transparentize(70%), thickness: 1pt, dash: "dashed"), // 1px dashed
@@ -177,8 +197,6 @@
     width: 100%,
     text(
       fill: colors.at("fg-muted"), // var(--fg-muted)
-      // // 强制使用正文字体而非等宽代码字体
-      // font: ("LXGW WenKai"),
       size: 10.5pt,
       lines.join(linebreak()),
     ),
@@ -428,6 +446,22 @@
       it
     }
   }
+
+  // ---------- 目录 ----------
+  // 用法：#outline(title: "目录") 或 #outline()
+  show outline: it => block(
+    fill: bg-soft,
+    stroke: (left: 3pt + accent),
+    radius: 8pt,
+    inset: (x: 16pt, y: 14pt),
+    width: 100%,
+    it,
+  )
+
+  // 目录条目：一级加粗深色，子级弱化；引导线默认点状
+  // 注：outline.title 是 heading，会自动套用上方标题样式
+  show outline.entry.where(level: 1): set text(fill: fg-heading, weight: 600)
+  show outline.entry: set text(fill: fg-muted, weight: 400)
 
   // ---------- 列表 ----------
   set list(marker: (
