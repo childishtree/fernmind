@@ -1,3 +1,10 @@
+<h1 align="center">
+    <a href="https://github.com/typst/typst">
+        <img alt="Typst" src="https://user-images.githubusercontent.com/17899797/226108480-722b770e-6313-40d7-84f2-26bebb55a281.png">
+    </a>
+    <br />Lightmind 主题模板
+</h1>
+
 ## 简介
 
 Lightmind 是一个山林森林绿调的中文文档主题，由同名 Typora 主题改写而来。米黄纸面承托文字、深海军蓝代码块、圆角公式卡片，支持亮色 / 暗色双模式，以及 Markdown 风格排版：YAML 前置元信息、GitHub 风格警告块、任务列表、键位样式等。
