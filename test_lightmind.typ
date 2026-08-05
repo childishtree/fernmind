@@ -13,6 +13,8 @@
   title: "Lightmind 主题功能测试",
   allow-page-breaks: false,
   // dark-mode: true,
+  equation-numbering: "(1)",   // 启用后所有块级公式自动编号为 (1)(2)(3)...
+  plain-image-alts: ("default",), // alt为default的使用默认图片样式
   doc,
 )
 
@@ -256,7 +258,7 @@ $
 居中独立图片：
 
 #figure(
-  image("lightmind-dark.png", width: 60%),
+  image("lightmind-dark.png", width: 60%,alt:"default"),
   caption: [暗色主题预览],
 )
 

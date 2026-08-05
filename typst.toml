@@ -1,5 +1,5 @@
 [package]
-name = "lightmind"
+name = "lightmind-typst"
 version = "0.1.0"
 entrypoint = "lightmind.typ"
 authors = ["SunMoonTrain"]

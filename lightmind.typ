@@ -210,6 +210,8 @@
   dark-mode: false,           // 亮暗主题开关，默认 false (亮色)
   font: ("LXGW WenKai", "Source Han Serif SC"), // 正文字体
   code-font: ("Cascadia Code", "LXGW WenKai"),  // 代码字体
+  plain-image-alts: (),       // 使用默认样式（不套圆角边框）的图片 alt 列表
+  equation-numbering: none,   // 行间（块级）公式自动编号格式，如 "(1)"；none 表示不编号
   doc,
 ) = {
   show: show-cn-fakebold
@@ -250,6 +252,17 @@
   let alert-warning-bg = colors.at("alert-warning-bg")
   let alert-caution = colors.at("alert-caution")
   let alert-caution-bg = colors.at("alert-caution-bg")
+
+  // ---------- 行间公式自动编号（可选） ----------
+  // 传入 equation-numbering（如 "(1)"）后，所有块级公式按出现顺序自动编号
+  // 注意：set 不能写在 if 块内（set 的作用域不泄漏到块外），必须用顶层 spread 展开
+  set math.equation(
+    ..if equation-numbering != none {
+      (numbering: equation-numbering)
+    } else {
+      ()
+    }
+  )
 
   // ---------- 页面框架 ----------
   set page(
@@ -503,12 +516,19 @@
   }
 
   // --- 图片样式 ---
-  show image: it => block(
-    radius: 4pt,
-    clip: true,
-    stroke: 1pt + fg-main.transparentize(92%),
-    it,
-  )
+  // 指定了 alt 且位于 plain-image-alts 中的图片（如行内小图标）使用默认样式，不套圆角边框
+  show image: it => {
+    if it.alt in plain-image-alts {
+      it
+    } else {
+      block(
+        radius: 4pt,
+        clip: true,
+        stroke: 1pt + fg-main.transparentize(92%),
+        it,
+      )
+    }
+  }
 
   // --- 高亮文本 ---
   show highlight: set highlight(

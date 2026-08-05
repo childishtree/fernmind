@@ -1,4 +1,4 @@
-#import "@preview/lightmind:0.1.0": lightmind, frontmatter, mark, kbd, task
+#import "@preview/lightmind-typst:0.1.0": lightmind, frontmatter, mark, kbd, task
 
 // 应用 Lightmind 主题。
 // 常用选项：
