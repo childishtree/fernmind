@@ -7,8 +7,8 @@
 > A forest-green Chinese document theme with light and dark modes.
 
 [![Built with Typst](https://img.shields.io/badge/Typst-0.13%2B-239dad?logo=typst&logoColor=white)](https://typst.app)
-[![Available on Typst Universe](https://img.shields.io/badge/Typst%20Universe-@preview%2Flightmind--theme-2ea44f)](https://typst.app/universe/package/lightmind-theme)
-[![Package version 0.1.0](https://img.shields.io/badge/version-0.1.0-orange)](https://typst.app/universe/package/lightmind-theme)
+[![Available on Typst Universe](https://img.shields.io/badge/Typst%20Universe-@preview%2Ffernmind-2ea44f)](https://typst.app/universe/package/fernmind)
+[![Package version 0.1.0](https://img.shields.io/badge/version-0.1.0-orange)](https://typst.app/universe/package/fernmind)
 [![MIT license](https://img.shields.io/github/license/childishtree/lightmind-typst)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/childishtree/lightmind-typst?style=social)](https://github.com/childishtree/lightmind-typst)
 
@@ -53,13 +53,13 @@ Lightmind is a forest-green Chinese document theme, adapted from the Typora them
 Initialize a new project with the template:
 
 ```bash
-typst init @preview/lightmind-theme:0.1.0
+typst init @preview/fernmind:0.1.0
 ```
 
 Or import the theme into an existing document:
 
 ```typst
-#import "@preview/lightmind-theme:0.1.0": lightmind, frontmatter, mark, kbd, task
+#import "@preview/fernmind:0.1.0": lightmind, frontmatter, mark, kbd, task
 ```
 
 > Requires Typst 0.13+ (0.15+ recommended).
