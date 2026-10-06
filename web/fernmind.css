@@ -13,3 +13,4 @@ body{font-family:var(--fm-body-font,"LXGW WenKai"),"KaiTi","STKaiti",serif}code{
 [data-theme="dark"] #theme-toggle .icon-sun{display:block}
 [data-theme="dark"] #theme-toggle .icon-moon{display:none}
 .footer-links{display:flex;flex-wrap:wrap;gap:.4rem 1.25rem}
+blockquote footer{margin-top:.6rem;text-align:right;color:var(--fg-muted);font-size:.95em}

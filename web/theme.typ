@@ -58,7 +58,14 @@
         html.div(class: "admonition-title", names.at(kind))
         it.body
       })
-    } else { it }
+    } else {
+      // Typst 的 HTML 导出会把 attribution 放在 blockquote 之后的独立段落里，
+      // 使署名与引文分家；这里自行构造，把署名收进引用框内部。
+      html.elem("blockquote", {
+        it.body
+        if it.attribution != none { html.elem("footer", "— " + it.attribution) }
+      })
+    }
   }
   let css-fonts(value) = if type(value) == str { repr(value) } else { value.map(repr).join(",") }
   html.elem("html", attrs: (lang: "zh-CN", "data-theme": if dark-mode { "dark" } else { "light" }, "data-math": math-renderer, style: "--fm-body-font:" + css-fonts(font) + ";--fm-code-font:" + css-fonts(code-font)), {
