@@ -7,6 +7,7 @@
 //   - dark-mode: true       启用暗色主题   // enable dark mode
 //   - font / code-font      自定义正文字体 / 代码字体   // custom body font / code font
 //   - allow-page-breaks     是否允许分页（false 输出无限长单页）   // allow page breaks (false outputs an infinitely long single page)
+//   - math-renderer         网页公式渲染："native"(默认, 原生 MathML) 或 "mathjax"(本地打包, 更一致)   // web math rendering: "native" (default) or "mathjax"
 #show: doc => lightmind(
   title: "Lightmind 主题文档",
   allow-page-breaks: false,

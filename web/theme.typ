@@ -21,7 +21,7 @@
   html.pre(class: "frontmatter", lines.join("\n"))
 }
 
-#let render(title: none, dark-mode: false, show-code-lang: true, equation-numbering: none, plain-image-alts: (), font: ("LXGW WenKai", "Source Han Serif SC"), code-font: ("Cascadia Code", "LXGW WenKai"), doc) = {
+#let render(title: none, dark-mode: false, show-code-lang: true, equation-numbering: none, plain-image-alts: (), math-renderer: "native", font: ("LXGW WenKai", "Source Han Serif SC"), code-font: ("Cascadia Code", "LXGW WenKai"), doc) = {
   set text(lang: "zh")
   set document(title: if title == none { "Fernmind" } else { title }, description: "Fernmind 中文文档主题，保留山林绿配色、霞鹜文楷与明暗两种阅读模式。")
   set math.equation(numbering: equation-numbering)
@@ -61,7 +61,7 @@
     } else { it }
   }
   let css-fonts(value) = if type(value) == str { repr(value) } else { value.map(repr).join(",") }
-  html.elem("html", attrs: (lang: "zh-CN", "data-theme": if dark-mode { "dark" } else { "light" }, style: "--fm-body-font:" + css-fonts(font) + ";--fm-code-font:" + css-fonts(code-font)), {
+  html.elem("html", attrs: (lang: "zh-CN", "data-theme": if dark-mode { "dark" } else { "light" }, "data-math": math-renderer, style: "--fm-body-font:" + css-fonts(font) + ";--fm-code-font:" + css-fonts(code-font)), {
     html.head({
       html.meta(charset: "utf-8")
       html.meta(name: "viewport", content: "width=device-width, initial-scale=1")
@@ -105,6 +105,12 @@
         html.p("Fernmind / Lightmind · © 2026 Childish_tree · MIT")
         html.a(href: "fernmind-web-source.zip", "下载网页项目")
       })
+      // 可选：用本地打包的 MathJax 把 Typst 导出的 MathML 重新排版为 SVG。
+      // 配置脚本必须先于 MathJax 主脚本执行，故两者顺序固定。
+      if math-renderer == "mathjax" {
+        html.script("window.MathJax={svg:{fontCache:'global'},options:{enableMenu:false}};")
+        html.elem("script", attrs: (src: "assets/vendor/mathjax/mml-svg.js", defer: ""))
+      }
       html.script(read("theme.js"))
     })
   })

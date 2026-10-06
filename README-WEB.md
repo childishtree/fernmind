@@ -27,6 +27,12 @@ python scripts/build_web.py --entry template/main.typ
 
 每次构建都会重新编译文档并更新资源，不依赖上一次构建的时间戳。
 
+启用改进的公式渲染（本地打包的 MathJax）：
+
+```sh
+python scripts/build_web.py --math-renderer mathjax
+```
+
 ## 编写内容
 
 继续使用原来的命令名称和参数。使用本项目的本地适配文件导入，而不是原版 Universe 包：
@@ -54,11 +60,24 @@ $ E = m c^2 $
 | `web/fernmind.css` | 原配色、标题、代码、表格、公式、图片及手机布局 |
 | `web/theme.js` | 明暗主题切换 |
 | `web/fonts/` | 随站点提供的霞鹜文楷、Cascadia Code 及字体许可证 |
+| `web/vendor/mathjax/` | 可选的 MathJax 组件（MathML→SVG）及 Apache-2.0 许可证 |
 | `test_lightmind.typ` | 原仓库的完整功能示例 |
 | `scripts/build_web.py` | 编译、提取图片资源、复制字体并生成源码包 |
 | `dist/` | 可发布的网页文件 |
 
 `font` 和 `code-font` 映射为网页字体栈。默认字体随网站提供；指定其他字体时需自行提供相应的网页字体或确保访问者安装了字体。`show-code-lang`、`plain-image-alts`、`equation-numbering`、`title`、`dark-mode` 均有网页对应行为。`allow-page-breaks` 仅影响 PDF；网页采用连续滚动。
+
+## 公式渲染（可选）
+
+默认公式沿用 Typst 导出的原生 MathML：零 JavaScript、可选中复制，但排版细节随浏览器实现而异。
+
+设置 `math-renderer: "mathjax"` 后，页面会加载随站点本地打包的 MathJax（`web/vendor/mathjax/`，Apache-2.0），把 `<math>` 重新排版为 SVG——跨浏览器一致、不依赖访问者系统安装的数学字体，深色模式下自动跟随文字颜色，且仍不请求任何外部 CDN。代价是页面额外加载约 1.7 MB 脚本。
+
+```typst
+#show: doc => lightmind(math-renderer: "mathjax", doc)
+```
+
+命令行构建时用 `--math-renderer mathjax` 亦可（`test_lightmind.typ` 通过 `sys.inputs` 读取该开关）。两种模式都无需改动文档正文，切换只影响输出。
 
 网页保留原样式语言，目录改为章节链接。浏览器换行、屏幕尺寸和 MathML 排版会与 PDF 有细微差异。HTML 导出仍是 Typst 的实验功能，本版已用 Typst 0.15.1 编译完整示例；建议固定这个编译器版本复现。
 

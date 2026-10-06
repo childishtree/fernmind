@@ -222,12 +222,14 @@
   code-font: ("Cascadia Code", "LXGW WenKai"),  // 代码字体
   plain-image-alts: (),       // 使用默认样式（不套圆角边框）的图片 alt 列表
   equation-numbering: none,   // 行间（块级）公式自动编号格式，如 "(1)"；none 表示不编号
+  math-renderer: "native",    // 网页公式渲染： "native"(原生 MathML, 默认) 或 "mathjax"(本地打包, 更一致)
   doc,
 ) = context {
   if target() == "html" {
     return web.render(
       title: title, dark-mode: dark-mode, show-code-lang: show-code-lang,
       equation-numbering: equation-numbering, plain-image-alts: plain-image-alts,
+      math-renderer: math-renderer,
       font: font, code-font: code-font, doc,
     )
   }

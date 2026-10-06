@@ -15,6 +15,7 @@
   // dark-mode: true,
   equation-numbering: "(1)",   // 启用后所有块级公式自动编号为 (1)(2)(3)...
   plain-image-alts: ("default",), // alt为default的使用默认图片样式
+  math-renderer: sys.inputs.at("math-renderer", default: "native"), // 构建时可用 --input math-renderer=mathjax 切换
   doc,
 )
 
