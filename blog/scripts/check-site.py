@@ -234,6 +234,16 @@ if '[data-math="mathjax"] .fernmind-content' not in css:
     errors.append('文章样式缺少 [data-math="mathjax"] .fernmind-content，公式规则可能失效')
 if '.fernmind-content [data-math=' in css:
     errors.append("文章样式出现 .fernmind-content [data-math=...]，作用域方向反了，规则永远不会命中")
+# 表格行样式必须限定 thead / tbody。Typst 的导出把表头放进 <thead>、数据行放进
+# <tbody>，而 :first-child / :nth-child 是**相对父元素**计数的：裸的 tr:first-child
+# 会同时命中 thead 的第一行与 tbody 的第一行（数据首行被画成表头），裸的
+# tr:nth-child 也会在 tbody 里重新计数，斑马纹整体错位一行。
+TABLE_ROW_PSEUDO = re.compile(r"tr:(?:first-child|last-child|nth-child\([^)]*\))")
+for match in TABLE_ROW_PSEUDO.finditer(css):
+    boundary = max(css.rfind("}", 0, match.start()), css.rfind("{", 0, match.start()), css.rfind(",", 0, match.start()))
+    selector = css[boundary + 1 : match.end()].strip()
+    if "thead" not in selector and "tbody" not in selector:
+        errors.append(f"fernmind/article.css：选择器「{selector}」未限定 thead/tbody，表格行样式会串行")
 for resource in re.findall(r'url\(["\']?([^\)"\']+)', css):
     if not (root / resource.lstrip("/")).is_file():
         errors.append("缺少随站点提供的字体：" + resource)

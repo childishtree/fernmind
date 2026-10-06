@@ -92,6 +92,21 @@ for required in ("og:title", "og:description", "og:type"):
 if not doc.html_attrs.get("lang"): errors.append("html element missing lang")
 if "data-math" not in doc.html_attrs: errors.append("html element missing data-math")
 
+# --- 表格行样式必须限定 thead / tbody ---
+# Typst 的 HTML 导出把表头放进 <thead>、数据行放进 <tbody>，而 :first-child /
+# :nth-child 是**相对父元素**计数的：裸的 tr:first-child 会同时命中 thead 的第一行
+# 与 tbody 的第一行（数据首行被画成表头），裸的 tr:nth-child 也会在 tbody 里重新
+# 计数，斑马纹整体错位一行。CSS 内联在 <style> 里，所以直接在整页文本上扫。
+for _match in re.finditer(r"tr:(?:first-child|last-child|nth-child\([^)]*\))", text):
+    _boundary = max(
+        text.rfind("}", 0, _match.start()),
+        text.rfind("{", 0, _match.start()),
+        text.rfind(",", 0, _match.start()),
+    )
+    _selector = text[_boundary + 1 : _match.end()].strip()
+    if "thead" not in _selector and "tbody" not in _selector:
+        errors.append("Table row selector not scoped to thead/tbody: " + _selector)
+
 for warning in warnings:
     print("warning: " + warning)
 if errors: raise SystemExit("\n".join(errors))
