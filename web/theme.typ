@@ -74,7 +74,7 @@
     html.body({
       html.a(class: "skip-link", href: "#document", "跳到正文")
       html.header(class: "site-toolbar", {
-        html.a(class: "wordmark", href: "#document", "Fernmind")
+        html.a(class: "wordmark", href: "#document", "🍃 Fernmind")
         html.div(class: "toolbar-actions", {
           html.a(href: "https://github.com/childishtree/fernmind", "原项目")
           html.button(type: "button", id: "theme-toggle", aria-label: "切换明暗主题", aria-pressed: dark-mode, "切换主题")
