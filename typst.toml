@@ -8,7 +8,22 @@ license = "MIT"
 description = "Forest-green theme for Chinese documents with light and dark modes."
 categories = ["report"]
 keywords = ["forest", "green", "chinese", "theme", "markdown", "light", "dark", "wenkai"]
-exclude = ["lightmind-dark.png","lightmind-light.png","test_lightmind_dark.png","test_lightmind_light.png","cover.png"]
+exclude = [
+  "lightmind-dark.png",
+  "lightmind-light.png",
+  "test_lightmind_dark.png",
+  "test_lightmind_light.png",
+  "cover.png",
+  # blog/ 是仓库内的博客脚手架，源码随包提供，但依赖与构建产物不进包。
+  "blog/node_modules/**",
+  "blog/dist/**",
+  "blog/output/**",
+  "blog/.sites-runtime/**",
+  "blog/public/articles/**",
+  "blog/public/fernmind/**",
+  "blog/public/licenses/fernmind.txt",
+  "blog/src/posts.json",
+]
 
 [template]
 path = "template"

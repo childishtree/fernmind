@@ -1,0 +1,12 @@
+# 依赖
+node_modules/
+
+# 构建与暂存产物
+dist/
+.sites-runtime/
+output/
+
+# 由 scripts/compile-typst.mjs 生成，不要直接编辑
+src/posts.json
+public/articles/
+public/fernmind/

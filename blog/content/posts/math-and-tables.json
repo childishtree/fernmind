@@ -1,0 +1,9 @@
+{
+  "title": "公式、表格与代码：把推导过程写清楚",
+  "slug": "math-and-tables",
+  "date": "2026-10-05",
+  "category": "排版笔记",
+  "tags": ["公式", "表格", "MathJax"],
+  "excerpt": "公式编号、跨页表格、带语言标签的代码块——这些正是 Markdown 最容易露怯的地方。记一次把推导写清楚的排版尝试。",
+  "mathRenderer": "mathjax"
+}

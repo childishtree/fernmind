@@ -1,0 +1,311 @@
+/* 把 Fernmind 的配色与字体接到 animal-island-ui 的 --animal-* 变量上，
+   并补齐文章正文在博客版式里的字号、行高与滚动留白。
+
+   正文自身的样式来自构建生成的 /fernmind/article.css —— 它由仓库根的
+   web/fernmind.css 与 web/fonts.css 逐条选择器限定到 .fernmind-content 而来，
+   因此主题一改，博客跟着变。这里不重复定义任何正文样式。 */
+
+:root {
+  --animal-font-family: 'LXGW WenKai', 'KaiTi', 'STKaiti', serif;
+  --animal-bg-color: var(--bg-page);
+  --animal-bg-color-secondary: var(--bg-write);
+  --animal-bg-color-disabled: var(--bg-soft);
+  --animal-text-color: var(--fg-main);
+  --animal-text-color-secondary: var(--fg-muted);
+  --animal-text-color-muted: var(--fg-faint);
+  --animal-text-color-disabled: var(--fg-faint);
+  --animal-primary-color: var(--accent);
+  --animal-primary-color-hover: var(--accent-deep);
+  --animal-primary-color-active: var(--accent-deep);
+  --animal-primary-color-bg: var(--bg-quote);
+  --animal-border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  --animal-border-color-hover: var(--accent-soft);
+  --animal-border-color-light: color-mix(in srgb, var(--accent) 20%, transparent);
+  --animal-border-radius-base: 10px;
+  --animal-border-radius-lg: 10px;
+  --animal-border-radius-sm: 7px;
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+h1,
+h2,
+h3,
+.brand strong {
+  color: var(--fg-heading);
+}
+
+.site {
+  max-width: 1160px;
+}
+.site-header {
+  min-height: 94px;
+  border-bottom-style: solid;
+}
+.brand {
+  border-radius: 7px;
+}
+.brand-icon {
+  border-radius: 10px;
+  border-width: 1px;
+}
+.brand strong {
+  font-weight: 500;
+}
+.site-nav a {
+  border-radius: 7px;
+  padding: 7px 14px;
+}
+.site-nav a.active {
+  border-color: var(--accent-soft);
+  background: var(--bg-soft);
+  color: var(--accent-deep);
+}
+
+.theme-toggle {
+  flex-shrink: 0;
+  font: inherit;
+  font-size: 13px;
+  color: var(--accent-deep);
+  background: var(--bg-write);
+  border: 1px solid var(--accent-soft);
+  border-radius: 7px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.theme-toggle:hover {
+  background: var(--bg-quote);
+}
+.theme-toggle:focus-visible,
+.reader-views button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+/* 首页 */
+.home-intro h1 {
+  font-weight: 500;
+}
+.home-intro h1 span {
+  text-decoration-thickness: 3px;
+}
+.intro-art {
+  border-radius: 10px;
+  height: 225px;
+}
+.intro-art > span {
+  background: var(--bg-write);
+  color: var(--accent-deep);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  padding: 3px 12px;
+  border-radius: 4px;
+}
+.post-card,
+.profile-card,
+.topics-card {
+  border-radius: 10px !important;
+  box-shadow: 0 3px 24px #14291c06;
+}
+.post-card h3 a {
+  color: var(--accent-deep);
+}
+.blog-stats strong {
+  font-weight: 500;
+}
+.topic-links a,
+.archive-row,
+.about-banner {
+  border-radius: 10px;
+}
+
+/* 文章 */
+.fernmind-article {
+  min-width: 0;
+  background: var(--bg-write);
+  padding: 48px 44px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: 0 3px 24px #14291c06;
+}
+.fernmind-article-header {
+  border-bottom: 1px solid var(--accent-soft);
+  padding-bottom: 28px;
+  margin-bottom: 24px;
+}
+.fernmind-article-header h1 {
+  text-align: center;
+  font-size: clamp(27px, 3.4vw, 40px);
+  line-height: 1.4;
+  font-weight: 500;
+  margin: 25px 0 22px;
+  color: var(--fg-heading);
+}
+.fernmind-article-header .post-meta {
+  justify-content: center;
+}
+.article-excerpt {
+  color: var(--fg-muted);
+  text-align: center;
+}
+.article-format {
+  justify-content: center;
+}
+.article-format > span {
+  color: var(--accent-deep);
+}
+
+.reader-toolbar {
+  padding: 9px 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  margin-bottom: 22px;
+}
+.reader-views {
+  border-color: var(--accent-soft);
+  background: var(--bg-soft);
+}
+.reader-views button[aria-pressed='true'] {
+  background: var(--bg-write);
+  color: var(--accent-deep);
+  box-shadow: 0 1px 5px #14291c0a;
+}
+.reader-links {
+  color: var(--accent-deep);
+}
+.reader-links a {
+  text-decoration-color: var(--accent-soft);
+}
+
+/* 正文容器：字号与字体变量在这里补齐，正文样式由 article.css 提供。 */
+.fernmind-content {
+  background: none;
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.85;
+  font-weight: 400;
+  --fm-body-font: 'LXGW WenKai';
+  --fm-code-font: 'Cascadia Code';
+}
+.fernmind-content a {
+  text-decoration: underline;
+}
+.fernmind-content .heading-level-1 {
+  scroll-margin-top: 28px;
+}
+.fernmind-content .heading-level-1:first-child {
+  margin-top: 1.5rem;
+}
+.fernmind-content img {
+  display: inline-block;
+}
+.fernmind-content :is(.heading-level-2, .heading-level-3, .heading-level-4, .heading-level-5, .heading-level-6) {
+  scroll-margin-top: 28px;
+}
+.fernmind-content .task-item input {
+  pointer-events: none;
+}
+.fernmind-content .table-scroll strong {
+  color: inherit;
+}
+
+/* 目录与相邻文章 */
+.article-sidebar .toc-card {
+  background: var(--bg-soft);
+  border-left: 3px solid var(--accent);
+  border-radius: 10px;
+}
+.toc-card nav a {
+  border-radius: 4px;
+}
+.next-post {
+  border-radius: 10px;
+}
+.site-footer {
+  border-top-style: solid;
+}
+
+@media (max-width: 960px) {
+  .fernmind-article {
+    padding: 38px 30px;
+  }
+  .header-actions {
+    gap: 8px;
+  }
+}
+
+@media (max-width: 760px) {
+  .fernmind-article {
+    width: 100%;
+    padding: 36px 28px;
+  }
+  .article-sidebar {
+    order: 0;
+  }
+  .intro-art {
+    display: block;
+    max-width: 100%;
+    height: 180px;
+    margin-top: 28px;
+  }
+  .header-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .site-nav a {
+    padding: 6px 9px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .fernmind-article {
+    padding: 28px 20px;
+  }
+  .fernmind-content {
+    font-size: 17px;
+  }
+  .fernmind-content .table-scroll table {
+    min-width: 330px;
+  }
+  .reader-toolbar {
+    gap: 16px;
+  }
+  .reader-links {
+    font-size: 12px;
+  }
+  .theme-toggle {
+    font-size: 12px;
+    padding: 5px 9px;
+  }
+}
+
+@media print {
+  .site-header,
+  .site-footer,
+  .article-sidebar,
+  .next-post,
+  .reader-toolbar,
+  .article-downloads {
+    display: none;
+  }
+  .site {
+    padding: 0;
+  }
+  .article-layout {
+    display: block;
+  }
+  .fernmind-article {
+    box-shadow: none;
+    padding: 0;
+    background: white;
+  }
+}

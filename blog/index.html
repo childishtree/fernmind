@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#f4f1e8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#161d1a" media="(prefers-color-scheme: dark)" />
+    <title>Fernmind 博客</title>
+    <meta name="description" content="用 Typst 写作、由 Fernmind 排版的静态博客。" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- 文章样式由 scripts/compile-typst.mjs 从仓库根的 web/ 生成 -->
+    <link rel="stylesheet" href="/fernmind/article.css" />
+    <script>
+      // 首屏主题：优先 localStorage，其次 <html data-theme>，最后跟随系统。
+      // 内联且同步执行，首次绘制前 data-theme 已就位，不会闪白或闪黑。
+      // __fmFollowSystem 标记"当前跟随系统"，供 React 的主题按钮在系统主题变化时实时切换。
+      (function () {
+        try {
+          var e = document.documentElement;
+          var f = e.dataset.theme;
+          var s = localStorage.getItem('fernmind-theme');
+          var x = s === 'light' || s === 'dark';
+          var m = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          e.dataset.theme = x ? s : f || m;
+          window.__fmFollowSystem = !x && !f;
+        } catch (_) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>正文可直接阅读。明暗切换、搜索与原版页面缩放需要 JavaScript；每篇文章也提供 PDF 下载。</noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

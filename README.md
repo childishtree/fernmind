@@ -25,6 +25,7 @@
 - [辅助函数](#辅助函数)
 - [目录](#目录)
 - [完整效果](#完整效果)
+- [静态博客](#静态博客)
 - [贡献](#贡献)
 - [许可证](#许可证)
 
@@ -42,6 +43,7 @@ Lightmind 是一个山林森林绿调的中文文档主题，由同名 Typora �
 - 📐 圆角公式卡片、柔和底色目录、点状引导线
 - 🎨 中文伪粗体 / 伪斜体（基于 `@preview/cuti`）
 - 🧩 可复用的辅助函数：`frontmatter`、`mark`、`kbd`、`task`、`quote`
+- 🖥️ 可选的 HTML 导出，以及把 `.typ` 文章变成静态博客的 `blog/` 脚手架
 
 ## 截图
 
@@ -135,6 +137,26 @@ typst init @preview/fernmind:0.1.0
   <source media="(prefers-color-scheme: dark)" srcset="test_lightmind_dark.png">
   <img alt="Lightmind 完整功能演示" src="test_lightmind_light.png">
 </picture>
+
+## 静态博客
+
+仓库内的 `blog/` 是一个把 Typst 文章预渲染成静态博客的脚手架。文章写一遍，构建时同时得到三种阅读方式：
+
+- **网页正文**：Typst 原生 HTML 导出，文字可选中复制，公式是 MathML，目录与脚注是原生锚点，代码块带复制按钮；
+- **原版页面**：同一份 `.typ` 导出为逐页 SVG，保留固定纸面版式，支持缩放；
+- **PDF / 源文件**：随文章一起提供下载。
+
+它**不复制主题**：构建时把 Typst 的 `--root` 指向仓库根，文章用 `#import "/lightmind.typ"` 直接复用本体的 `lightmind.typ` 与 `web/`，因此主题一改，博客跟着变。外壳用 [animal-island-ui](https://github.com/guokaigdg/animal-island-ui)，配色与字体通过 CSS 变量映射回 Fernmind。
+
+```sh
+cd blog
+npm install
+npm run dev            # 编译文章并启动开发服务器
+npm run build          # 构建到 blog/dist/
+npm run check          # 校验产物
+```
+
+每篇文章在 `content/posts/` 下由同名的 `.typ` 与 `.json` 组成，`json` 提供标题、摘要、分类、日期等元数据。完整说明见 [blog/README.md](blog/README.md)。
 
 ## 贡献
 

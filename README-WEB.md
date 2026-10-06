@@ -96,6 +96,8 @@ $ E = m c^2 $
 
 加载期间原生公式会先隐藏，等 MathJax 完成替换后再显示，因此不会出现「原生 MathML → SVG」的闪动；脚本用 `MutationObserver` 判断替换是否完成，并设 3 秒兜底：万一 MathJax 加载失败，原生公式仍会正常显示。关闭 JavaScript 时同样直接显示原生 MathML。
 
+已知限制：`web/vendor/mathjax/mml-svg.js` 是 MathJax 4.1.3 的官方完整打包版，内含无障碍朗读（SRE）栈，会尝试加载同目录下的 `sre/speech-worker.js`；仓库只随包提供 `mml-svg.js`，因此控制台会出现一条该 worker 加载失败的错误。这只影响公式语音朗读，不影响渲染。
+
 ```typst
 #show: doc => lightmind(math-renderer: "mathjax", doc)
 ```
@@ -105,6 +107,24 @@ $ E = m c^2 $
 网页保留原样式语言，目录改为章节链接。浏览器换行、屏幕尺寸和 MathML 排版会与 PDF 有细微差异。HTML 导出仍是 Typst 的实验功能，本版已用 Typst 0.15.1 编译完整示例；建议固定这个编译器版本复现。
 
 修改内容后再次运行构建命令。网站可直接打开阅读，正文不是截图；数学公式为原生 MathML。样式、脚本、图片、字体均在生成目录中，不依赖外部 CDN。
+
+## 静态博客（`blog/`）
+
+仓库内的 `blog/` 把上述能力扩展成一个完整的静态博客：多篇文章、分类、搜索、归档、关于页与逐路由预渲染。它同样输出网页正文、原版页面与 PDF 三种阅读方式。
+
+关键区别在于**不复制主题**。`blog/content/theme.typ` 通过 `#import "/lightmind.typ"` 引用仓库根的主题——构建脚本把 Typst 的 `--root` 指向仓库根，因此 `lightmind.typ` 与 `web/` 只有一份，主题的修改会直接反映到博客，不会出现「副本停在旧版本」的问题。文章样式由构建时把 `web/fernmind.css` 与 `web/fonts.css` 逐条选择器限定到 `.fernmind-content` 生成。
+
+```sh
+cd blog
+npm install
+npm run dev            # 编译文章并启动开发服务器
+npm run build          # 构建到 blog/dist/
+npm run check          # 校验锚点、页数、图片、源文件与字体
+```
+
+文章由 `content/posts/` 下同名的 `.typ` 与 `.json` 组成。外壳使用 [animal-island-ui](https://github.com/guokaigdg/animal-island-ui)（MIT），通过 CSS 变量把配色与字体映射回 Fernmind。博客侧的正文增强（标题锚点、代码复制）由 `src/reading.ts` 实现，MathJax 由 `src/mathjax.ts` 按文章需要加载。
+
+完整说明见 [blog/README.md](blog/README.md)。
 
 ## 原项目与许可证
 

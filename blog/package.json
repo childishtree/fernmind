@@ -1,0 +1,29 @@
+{
+  "name": "fernmind-blog",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "把 Typst 文章预渲染成静态博客的脚手架，复用 Fernmind 主题与 animal-island-ui。",
+  "scripts": {
+    "dev": "node scripts/compile-typst.mjs && vite",
+    "build": "node scripts/compile-typst.mjs && tsc --noEmit && vite build && node scripts/routes.mjs",
+    "preview": "vite preview",
+    "articles:build": "node scripts/compile-typst.mjs",
+    "article:pdf": "node scripts/compile-one.mjs",
+    "check": "node scripts/check-site.mjs"
+  },
+  "dependencies": {
+    "animal-island-ui": "^2.1.0",
+    "naive-icons": "^1.2.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^5.0.0",
+    "postcss": "^8.5.29",
+    "typescript": "^5.7.3",
+    "vite": "^7.3.2"
+  }
+}
