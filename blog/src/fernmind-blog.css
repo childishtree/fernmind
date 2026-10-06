@@ -6,7 +6,10 @@
    因此主题一改，博客跟着变。这里不重复定义任何正文样式。 */
 
 :root {
-  --animal-font-family: 'LXGW WenKai', 'KaiTi', 'STKaiti', serif;
+  /* animal-island-ui 也在 :root 上声明了这个变量，而且带 !important。不跟着写
+     !important 的话这里的覆盖永远赢不了，整站会落到它默认字体栈里的
+     "Noto Sans SC"——三个字重合计 3.4 MB，比正文字体的子集大二十倍。 */
+  --animal-font-family: 'LXGW WenKai', 'KaiTi', 'STKaiti', serif !important;
   --animal-bg-color: var(--bg-page);
   --animal-bg-color-secondary: var(--bg-write);
   --animal-bg-color-disabled: var(--bg-soft);
@@ -29,6 +32,15 @@
 
 [data-theme='dark'] {
   color-scheme: dark;
+}
+
+/* 少数组件把字体栈硬编码在自身规则里、不经过 --animal-font-family，其中
+   .animal-checkboxGroup 那条还带 !important，改变量压不住，只能按类名前缀统一压回。
+   库里的 font-family 取值只有 Nunito / Noto Sans SC / var(--animal-font-family) /
+   inherit 四种，没有等宽或图标字体，所以这条不会误伤。 */
+[class^='animal-'],
+[class*=' animal-'] {
+  font-family: var(--animal-font-family) !important;
 }
 
 h1,

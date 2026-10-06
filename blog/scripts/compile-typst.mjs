@@ -16,6 +16,7 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { createHash } from 'node:crypto';
 import postcss from 'postcss';
+import { buildSubset, parseUnicodeRange } from './subset-font.mjs';
 
 const exec = promisify(execFile);
 
@@ -190,6 +191,77 @@ scoped.walkRules((rule) => {
   });
 });
 
+/* ------------------------------------------------------------ 字体子集 */
+
+// 霞鹜文楷的全量字体有 12.7 MB，主题里那条 -Text 子集又只覆盖 507 个码位，
+// 正文出现子集之外的字就得把全量字体整个拉下来。这里改为按站点实际用字生成
+// 子集（通常一百多 KB），并附上 unicode-range，使将来的生僻字回退到后备字体
+// 而不是渲染成豆腐块。
+const SUBSET_FONT_FILE = '/fernmind/assets/fonts/wenkai-subset.woff2';
+const WENKAI_FACE = /@font-face\{font-family:"LXGW WenKai";[^}]*\}/g;
+
+// 主题与 web/fonts.css 里各有两条霞鹜文楷 @font-face（全量 + 子集）。
+// 把它们合并成一条指向本地子集的声明，位置沿用第一条，保持 CSS 顺序不变。
+function applySubsetFace(css, unicodeRange) {
+  const face = `@font-face{font-family:"LXGW WenKai";src:url("${SUBSET_FONT_FILE}") format("woff2");font-style:normal;font-weight:400;font-display:swap;unicode-range:${unicodeRange}}`;
+  let replaced = false;
+  return css.replace(WENKAI_FACE, () => {
+    if (replaced) return '';
+    replaced = true;
+    return face;
+  });
+}
+
+// 兜底字符集：ASCII、中英文标点与常见数学符号。正文里若出现子集之外的字，
+// unicode-range 会让它回退到后备字体，不会变成豆腐块。
+const BASE_CHARACTERS =
+  ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~' +
+  '·—–…“”‘’《》〈〉「」『』【】〔〕（）［］、。，；：？！　' +
+  '×÷±≈≠≤≥∞∑∏√∫∂∈∀∃∧∨¬→←↑↓⇒⇔°′″μΩαβγδεζηθικλμνξπρστυφχψω' +
+  // 组件库自己渲染出来的装饰记号（例如 Tabs 未给图标时用 ○ / ● 占位），
+  // 不出现在 src/ 里，只能在这里兜底。
+  '○●◆◇■□▲△▼▽★☆';
+
+// 收集站点上会真正渲染出来的文字：文章源与元数据、站点文案与组件、以及
+// 编译产物里的正文纯文本。宁可多收一点，也不要漏字。
+//
+// 产物一律走 visibleText() 而不是直接读文件：HTML 里的 <style> 内联样式、
+// <script> 与 data: 图标都是字符噪音，收进来只会把子集撑大。
+function visibleText(html) {
+  return html
+    .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, ' ')
+    .replace(/<[^>]*>/g, ' ');
+}
+
+function collectFontText() {
+  const parts = [BASE_CHARACTERS];
+  const addFile = (file) => {
+    try {
+      parts.push(fs.readFileSync(file, 'utf8'));
+    } catch {
+      // 读不到就跳过，不因为某个可选文件缺失而中断构建。
+    }
+  };
+  for (const name of fs.readdirSync(entries)) addFile(path.join(entries, name));
+  // 递归读取 src/，将来把组件放进子目录也不会漏字。
+  for (const name of fs.readdirSync(path.join(blogRoot, 'src'), { recursive: true })) {
+    if (/\.(ts|tsx|html)$/.test(name)) addFile(path.join(blogRoot, 'src', name));
+  }
+  addFile(path.join(blogRoot, 'index.html'));
+  for (const post of posts) {
+    const directory = path.join(publicRoot, 'articles', post.slug);
+    // document.html 是独立阅读页，除正文外还带标题、摘要、侧栏目录与页脚，
+    // 用字比 body.html 更全，是主要的收集来源。
+    for (const name of ['document.html', 'body.html']) {
+      const file = path.join(directory, name);
+      if (fs.existsSync(file)) parts.push(visibleText(fs.readFileSync(file, 'utf8')));
+    }
+    const text = path.join(directory, 'text.txt');
+    if (fs.existsSync(text)) parts.push(fs.readFileSync(text, 'utf8'));
+  }
+  return parts.join('\n');
+}
+
 /* ------------------------------------------------------------------ 编译文章 */
 
 // 每次构建从空的暂存目录开始，避免上一版的残留文件混进这一版。
@@ -343,17 +415,99 @@ clearDirectory(path.join(publicRoot, 'articles'));
 fs.cpSync(staging, path.join(publicRoot, 'articles'), { recursive: true });
 
 clearDirectory(path.join(publicRoot, 'fernmind'));
-fs.mkdirSync(path.join(publicRoot, 'fernmind/assets'), { recursive: true });
-fs.cpSync(path.join(repoRoot, 'web/fonts'), path.join(publicRoot, 'fernmind/assets/fonts'), { recursive: true });
+const fontsTarget = path.join(publicRoot, 'fernmind/assets/fonts');
+fs.mkdirSync(fontsTarget, { recursive: true });
+// 霞鹜文楷的原文件不随站点分发（全量 12.7 MB，主题自带的子集只覆盖 507 码位），
+// 由下面按实际用字生成的子集替代。其余字体与许可说明照常复制。
+for (const name of fs.readdirSync(path.join(repoRoot, 'web/fonts'))) {
+  if (/^LXGWWenKai-.*\.woff2?$/.test(name)) continue;
+  fs.copyFileSync(path.join(repoRoot, 'web/fonts', name), path.join(fontsTarget, name));
+}
 // 可选公式渲染器随站点本地提供，不请求外部 CDN。
 if (fs.existsSync(path.join(repoRoot, 'web/vendor'))) {
   fs.cpSync(path.join(repoRoot, 'web/vendor'), path.join(publicRoot, 'fernmind/assets/vendor'), { recursive: true });
 }
 fs.copyFileSync(path.join(repoRoot, 'cover.png'), path.join(publicRoot, 'fernmind/cover.png'));
-fs.writeFileSync(path.join(publicRoot, 'fernmind/article.css'), scoped.toString());
+
+const subsetSource = path.join(repoRoot, 'web/fonts/LXGWWenKai-Regular.woff');
+const subset = await buildSubset({
+  source: subsetSource,
+  output: path.join(fontsTarget, 'wenkai-subset.woff2'),
+  text: collectFontText(),
+});
+
+// 文章样式与独立阅读页内联的样式各有一份 @font-face，两处都要换掉；
+// 否则独立阅读页会去请求已经不随站点分发的全量字体。
+fs.writeFileSync(
+  path.join(publicRoot, 'fernmind/article.css'),
+  applySubsetFace(scoped.toString(), subset.unicodeRange),
+);
+for (const post of posts) {
+  if (!post.webUrl) continue;
+  const file = path.join(publicRoot, post.webUrl.replace(/^\//, ''));
+  fs.writeFileSync(file, applySubsetFace(fs.readFileSync(file, 'utf8'), subset.unicodeRange));
+}
+
+// 子集化最大的风险是「漏字」——它不会报错，只会让页面悄悄换成后备字体。
+// 三条断言各盯一类漏法：
+//   1. unicode-range 无损表达字形覆盖：区间合并算错，浏览器就不认那些码位；
+//   2. unicode-range 不多不少：多声明一个没有字形的码位就是一块豆腐；
+//   3. 页面真正渲染出来的字都在请求集里：收集源漏了一处文案就会漏字。
+const codepoints = (text) => new Set([...text].map((character) => character.codePointAt(0)));
+
+// 这些字本来就该由专门字体渲染，不指望霞鹜文楷覆盖，也不算缺字：
+//   · 控制与格式字符不需要字形（换行、零宽连接符等）；
+//   · 数学字母数字符号由 MathML 的数学字体渲染；
+//   · emoji 与杂项符号由系统 emoji 字体渲染。
+const SPECIALIZED =
+  /[\p{Cc}\p{Cf}\p{Zl}\p{Zp}\u{FE00}-\u{FE0F}\u{1D400}-\u{1D7FF}\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
+
+const rangePoints = parseUnicodeRange(subset.unicodeRange);
+const lostInRange = [...subset.covered].filter((point) => !rangePoints.has(point));
+const extraInRange = [...rangePoints].filter((point) => !subset.covered.has(point));
+if (lostInRange.length || extraInRange.length) {
+  const describe = (points) => points.map((point) => String.fromCodePoint(point)).join('');
+  throw new Error(
+    'unicode-range 与字形覆盖不一致：' +
+      `漏声明 ${lostInRange.length} 个（${describe(lostInRange)}）、多声明 ${extraInRange.length} 个（${describe(extraInRange)}）。` +
+      'toUnicodeRange() 的区间合并有问题，或多声明了字体没有的字形（会渲染成豆腐块）。',
+  );
+}
+
+// 校验对象是「最终产物」而不是收集源：即使有人给页面注入了一段新文案，
+// 只要它出现在导出的 HTML 里就会被这里发现。
+const renderedText = posts
+  .filter((post) => post.webUrl)
+  .map((post) => visibleText(fs.readFileSync(path.join(publicRoot, post.webUrl.replace(/^\//, '')), 'utf8')))
+  .join('\n');
+const rendered = codepoints(renderedText);
+const notCollected = [...rendered].filter((point) => !subset.requested.has(point));
+if (notCollected.length) {
+  throw new Error(
+    `正文用字不在子集请求范围内：${notCollected.map((point) => String.fromCodePoint(point)).join('')}` +
+      `（共 ${notCollected.length} 个）。请检查 collectFontText() 是否漏了文字来源。`,
+  );
+}
+
+// 排除掉该由专门字体渲染的字之后，剩下的才是真·缺字：正文里会出现一款「异体」。
+const fallback = [...rendered].filter(
+  (point) => !subset.covered.has(point) && !SPECIALIZED.test(String.fromCodePoint(point)),
+);
+if (fallback.length) {
+  process.stderr.write(
+    `提示：霞鹜文楷缺少 ${fallback.length} 个正文用字的字形（${fallback
+      .map((point) => String.fromCodePoint(point))
+      .join('')}），这些字会回退到后备字体。\n`,
+  );
+}
 
 fs.mkdirSync(path.join(publicRoot, 'licenses'), { recursive: true });
 fs.copyFileSync(path.join(repoRoot, 'LICENSE'), path.join(publicRoot, 'licenses/fernmind.txt'));
 
 fs.writeFileSync(path.join(blogRoot, 'src/posts.json'), JSON.stringify(posts, null, 2) + '\n');
 console.log(`已准备 ${posts.length} 篇文章（${compilerVersion}）。`);
+console.log(
+  `霞鹜文楷子集：请求 ${subset.characters} 字 → 声明 ${subset.covered.size} 个字形的 unicode-range，` +
+    `正文 ${rendered.size} 字中 ${fallback.length} 字回退后备字体，` +
+    `产物 ${(subset.bytes / 1024).toFixed(1)} KB（原字体 ${(fs.statSync(subsetSource).size / 1048576).toFixed(2)} MB）`,
+);

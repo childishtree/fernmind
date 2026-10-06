@@ -3,6 +3,11 @@ import { BookIcon, CompassIcon, CodeIcon } from 'naive-icons';
 
 export const site = {
   name: 'Fernmind 博客',
+  // 部署后的站点根地址，末尾不带斜杠。
+  // canonical、og:url 与 og:image 都要求绝对地址，所以这里要填真实域名；
+  // 构建时也可以用 SITE_URL 环境变量覆盖（例如 CI 里按分支生成预览地址）。
+  // 留空则只输出不依赖绝对地址的那部分社交标签。占位值用 RFC 2606 保留的 .example。
+  url: 'https://fernmind.example',
   latinName: 'FERNWIND NOTES',
   author: 'Fernmind',
   description:

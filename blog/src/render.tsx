@@ -14,6 +14,8 @@ export type RouteMeta = {
   path: string;
   title: string;
   description: string;
+  /** 文章发布日；非文章页为 undefined。用于 og:type=article 的发布时间。 */
+  date?: string;
   /** 文章声明的公式渲染方式；非文章页为 undefined。 */
   math?: 'native' | 'mathjax';
 };
@@ -40,6 +42,7 @@ export function buildRoutes(): { pages: RouteMeta[]; notFound: RouteMeta } {
         path: `posts/${post.slug}`,
         title: post.title,
         description: post.excerpt,
+        date: post.date,
         math: mathRenderer(post.math),
       })),
     ],

@@ -4,6 +4,8 @@
 
 博客的正文样式直接来自仓库根的 `web/fernmind.css` 与 `lightmind.typ`——**没有主题副本**，所以主题一改，博客跟着变。外壳用 [animal-island-ui](https://github.com/guokaigdg/animal-island-ui)（MIT），配色和字体通过 CSS 变量映射回 Fernmind。
 
+正文与界面文字统一用霞鹜文楷，但**不随站点分发 12.7 MB 的全量字体**：构建时按站点实际用字裁成一百多 KB 的子集，详见[字体子集](#字体子集)。
+
 > 这个目录需要留在 fernmind 仓库内：构建时 Typst 的 `--root` 指向仓库根，文章用 `#import "/lightmind.typ"` 复用本体主题。要放到别处，用 `FERNWIND_ROOT` 指向仓库根即可。
 
 ## 快速开始
@@ -20,7 +22,7 @@ npm run dev          # 先编译文章，再启动开发服务器（http://127.0
 
 ```sh
 npm run build        # 编译文章 + 类型检查 + 打包 + 逐路由预渲染
-npm run check        # 校验产物：锚点、页数、图片、源文件一致性、字体
+npm run check        # 校验产物：锚点、页数、图片、源文件一致性、社交卡片、字体子集
 ```
 
 产物在 `blog/dist/`，整个目录可以直接部署到任意静态托管。每篇文章都有独立的预渲染页面，关闭 JavaScript 也能读到全文；主题切换、搜索和阅读模式切换需要 JavaScript。
@@ -45,6 +47,7 @@ npm run check        # 校验产物：锚点、页数、图片、源文件一致
 | `PYTHON_BIN` | Python 解释器（Windows 默认 `python`，其他系统默认 `python3`） |
 | `BLOG_FONT_PATHS` | 额外字体目录，多个路径用系统路径分隔符连接 |
 | `FERNWIND_ROOT` | fernmind 仓库根目录，默认取 `blog/` 的上一级 |
+| `SITE_URL` | 覆盖 `src/site.ts` 里的站点地址，用于生成 `canonical` / `og:url` / `og:image` |
 
 字体查找顺序：系统字体 → `content/fonts/` → `BLOG_FONT_PATHS`。检测到缺失字体会直接报错中止，不会静默替换。
 
@@ -126,9 +129,37 @@ $ E = m c^2 $
 
 以 `/` 开头的是 Typst 的 root 绝对路径（root 即仓库根），否则相对 `.typ` 文件解析。构建后 `/articles/<slug>/images/` 下会出现这些文件。
 
+## 字体子集
+
+霞鹜文楷的全量字体有 12.7 MB。直接随站点分发，单个文章页要下载 12.75 MB 的字体；只依赖主题自带的 `-Text` 子集也不行——它只覆盖 507 个码位，正文里出现一个子集之外的字，浏览器仍会把全量字体整个拉下来。
+
+构建时改为**按站点实际用字生成子集**（`scripts/subset-font.mjs`，用 npm 的 `subset-font`）：
+
+1. 收集站点会渲染出来的全部文字——文章源与元数据、`src/` 下的界面文案、以及导出的 HTML 正文；
+2. 用 HarfBuzz 裁出只含这些字的子集，写成 `public/fernmind/assets/fonts/wenkai-subset.woff2`（通常一百多 KB）；
+3. 把主题与独立阅读页里的霞鹜文楷 `@font-face` 合并成一条指向子集的声明，并附上 `unicode-range`。
+
+`unicode-range` 按**子集里真有字形的码位**声明，而不是按请求的码位。两者之差是字体本身没有的字（emoji、数学斜体字母、控制字符）——把它们也声明进来的话，浏览器会选中这个字体、再画出 `.notdef`（豆腐块），反而不会回退到后备字体。
+
+构建期有三条断言守着漏字（漏字不会报错，只会让页面悄悄换成后备字体）：
+
+- `unicode-range` 与字形覆盖必须完全一致（区间合并算错、或多声明了没有的字形都会中止构建）；
+- 页面真正渲染出来的字必须在请求集内（收集源漏了来源就会中止）；
+- 排除该由专门字体渲染的字之后仍缺字形的，打印提示。
+
+`npm run check` 还会做一次端到端复核：`dist/` 里每个页面的可见文字都必须落在子集的 `unicode-range` 内。
+
+许可：霞鹜文楷采用 SIL OFL 1.1，其版权行含一条 ADDITIONAL PERMISSION，明确允许为网页字体分发而做子集化或转格式（如 WOFF2）并继续使用保留字体名，前提是不作为可安装的桌面字体分发。本子集只随站点作为网页字体提供，符合该许可。原文见 `../web/fonts/OFL-WenKai.txt`。
+
+界面文字同样落到这款子集字体上。animal-island-ui 的默认字体栈里带 `"Noto Sans SC"`（三个字重合计 3.4 MB），所以 `src/fernmind-blog.css` 会把 `--animal-font-family` 覆盖成 Fernmind 的正文字体。这里有个坑：**库在 `:root` 上也声明了同一个变量，而且带 `!important`**，覆盖时不跟着写 `!important` 就永远赢不了；另有少数组件把字体栈硬编码在自身规则里（`.animal-checkboxGroup` 那条还带 `!important`），改变量压不住，只能按 `animal-` 类名前缀统一压回。
+
 ## 站点配置
 
-`src/site.ts` 是站点文案与分类的唯一来源：站名、简介、首页标题、关于页段落、分类列表都在这里。`scripts/routes.mjs` 会从同一份配置生成各路由的 `<title>` 与 `<meta name="description">`，不必两处维护。
+`src/site.ts` 是站点文案与分类的唯一来源：站名、简介、首页标题、关于页段落、分类列表都在这里。`scripts/routes.mjs` 会从同一份配置生成各路由的 `<title>`、`<meta name="description">`、`canonical` 与 `og:*` / `twitter:*` 社交卡片，不必两处维护。
+
+`site.url` 是部署后的站点根地址（末尾不带斜杠）。`canonical`、`og:url` 与 `og:image` 都要求绝对地址，所以这里要填真实域名；也可以用 `SITE_URL` 环境变量覆盖，例如 CI 里按分支生成预览地址。留空则只输出不依赖绝对地址的那部分社交标签。
+
+独立阅读页（`/articles/<slug>/document.html`）是同一篇文章的另一种排法，构建时会补上 `canonical` 指向网页正文 `/posts/<slug>/`，避免被搜索引擎当成重复内容。
 
 新增分类时在 `topics` 里加一项，并让文章的 `category` 与之对应。
 
@@ -138,7 +169,8 @@ $ E = m c^2 $
 | --- | --- |
 | `content/theme.typ` | 博客的 Typst 入口，`#import "/lightmind.typ"` 复用仓库根主题 |
 | `content/posts/` | 文章源（`.typ` + 同名 `.json`） |
-| `scripts/compile-typst.mjs` | 编译文章，生成 HTML / PDF / SVG / 文本与文章样式 |
+| `scripts/compile-typst.mjs` | 编译文章，生成 HTML / PDF / SVG / 文本、文章样式与字体子集 |
+| `scripts/subset-font.mjs` | 按实际用字裁剪霞鹜文楷，并核对字形覆盖 |
 | `scripts/extract-typst-html.py` | 从原生导出中抽出正文与标题锚点 |
 | `scripts/routes.mjs` | 逐路由服务端预渲染，写出完整静态页面 |
 | `scripts/check-site.mjs`、`check-site.py` | 产物校验 |
@@ -148,7 +180,7 @@ $ E = m c^2 $
 | `src/TypstArticle.tsx` | 网页 / 原版阅读切换、目录与下载 |
 | `src/reading.ts` | 正文增强：标题锚点与代码复制 |
 | `src/mathjax.ts` | 按需加载本地打包的 MathJax |
-| `src/fernmind-blog.css` | 把 Fernmind 变量接到 animal-island-ui |
+| `src/fernmind-blog.css` | 把 Fernmind 变量接到 animal-island-ui，并把界面字体压回正文字体 |
 | `public/` | 静态资源（图标、许可说明、文章产物） |
 
 `src/posts.json`、`public/articles/`、`public/fernmind/`、`dist/`、`.sites-runtime/` 都是生成结果，不要直接编辑。文章先编译到 `.sites-runtime/typst-articles` 暂存，**全部成功后才替换上一版产物**，因此单篇编译失败不会留下半套站点。
