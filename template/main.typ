@@ -1,4 +1,4 @@
-#import "@preview/fernmind:0.1.0": lightmind, frontmatter, mark, kbd, task
+#import "../lightmind.typ": lightmind, frontmatter, mark, kbd, task
 
 // 应用 Lightmind 主题。
 // Apply the Lightmind theme.
@@ -25,7 +25,7 @@
 
 = 一级标题
 
-这是正文。*加粗*、_斜体_、`行内代码`、#kbd[Ctrl] + #kbd[P]、#mark[高亮文本] 以及[链接](https://typst.app)。
+这是正文。*加粗*、_斜体_、`行内代码`、#kbd[Ctrl] + #kbd[P]、#mark[高亮文本] 以及 #link("https://typst.app")[链接]。
 
 == 二级标题
 

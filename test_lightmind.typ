@@ -58,7 +58,7 @@
 
 #highlight[这是高亮文本]，可以混合 #highlight[_斜体高亮_]。H#sub[2]O 是水的化学式，E = mc#super[2] 是质能方程。
 
-[这是一个链接](https://typora.io)，链接里的 `代码`，邮箱 #link("mailto:noreply@example.com")[noreply\@example.com]。
+#link("https://typora.io")[这是一个链接]，链接里的 `代码`，邮箱 #link("mailto:noreply@example.com")[noreply\@example.com]。
 
 = 引用块与警告块
 

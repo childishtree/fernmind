@@ -1,0 +1,9 @@
+# 构建产物
+dist/
+
+# Python
+__pycache__/
+*.pyc
+
+# 工具数据目录
+.workbuddy-ai/

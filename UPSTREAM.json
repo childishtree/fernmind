@@ -1,0 +1,8 @@
+{
+  "repository": "https://github.com/childishtree/fernmind",
+  "commit": "7b8edbd1a07bd9410a0ca548de468b3c88244bea",
+  "package": "fernmind",
+  "package_version": "0.1.0",
+  "port": "Typst HTML adaptation preserving the Lightmind design",
+  "validated_typst": "0.15.1"
+}
