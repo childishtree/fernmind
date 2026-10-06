@@ -1,3 +1,13 @@
+/* ---------------------------------------------------------------------------
+   配色来源：下面 :root / [data-theme="dark"] 的变量是 lightmind.typ 里
+   colors / dark-colors 两套调色板的**手工镜像**——没有自动同步，改一边要手动改另一边。
+   本文件只在 target() == "html" 分支被读取，所以改这里**不影响 PDF 输出**。
+
+   有意保留的一处差异 —— 亮色主题下的代码块：
+     PDF  code-bg: #1e2330（深藏青 + Typst 默认语法色）
+     网页 code-bg: #f7f8fa（浅底 + One Light 语法色）
+   暗色两侧一致（#14181f + One Dark）。原因与取舍见 README「网页版与 PDF 的差异」。
+   --------------------------------------------------------------------------- */
 @font-face{font-family:"LXGW WenKai";src:url("assets/fonts/LXGWWenKai-Regular.woff") format("woff");font-style:normal;font-weight:400;font-display:swap}
 :root{--bg-page:#f4f1e8;--bg-write:#faf7ef;--bg-soft:#ece8db;--bg-formula:#f7f3e8;--bg-quote:#ecefe6;--bg-inline-code:#e7eee5;--bg-highlight:#e6dbc5;--fg-main:#2c3a32;--fg-muted:#6b7a6f;--fg-faint:#93a098;--fg-heading:#1f2a23;--accent:#4a7c59;--accent-deep:#2f5a40;--accent-soft:#8fb39b;--accent-warm:#c2a878;--code-bg:#f7f8fa;--code-bg-soft:#eceef3;--code-fg:#3b4048;--code-gutter:#9aa1ad;--code-line:#e2e6ec;--code-lang-fg:#697180;--code-btn-bg:#fff;--code-btn-fg:#5b6472;color-scheme:light}
 [data-theme="dark"]{--bg-page:#161d1a;--bg-write:#1d2622;--bg-soft:#232d28;--bg-formula:#1f2823;--bg-quote:#1d2722;--bg-inline-code:#25342c;--bg-highlight:#453a26;--fg-main:#d4dccf;--fg-muted:#9ba89e;--fg-faint:#6f7a72;--fg-heading:#e8ede1;--accent:#7fbe92;--accent-deep:#a8d4b6;--accent-soft:#5a7d68;--accent-warm:#d8bd86;--code-bg:#14181f;--code-bg-soft:#1c2128;--code-fg:#c8cfd9;--code-gutter:#6b7488;--code-line:#2a323f;--code-lang-fg:#8b95a7;--code-btn-bg:#242c38;--code-btn-fg:#a7b0c1;color-scheme:dark}
