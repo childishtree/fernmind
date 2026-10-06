@@ -254,7 +254,10 @@ $
 
 左对齐的图片：
 
-#image("lightmind-light.png", width: 40%)
+#image("lightmind-light.png", width: 40%, alt: "亮色主题预览")
+
+// 注：图片若省略 alt，网页版会以文件名主干自动兜底（如 lightmind-light），
+// 保证不产出缺少替代文本的 <img>；正式文档仍建议显式写出 alt。
 
 居中独立图片：
 

@@ -215,9 +215,10 @@
 
 #let lightmind(
   title: none,
+  description: "Fernmind 中文文档主题，保留山林绿配色、霞鹜文楷与明暗两种阅读模式。", // 文档描述（网页 <meta> 与 PDF 元信息）
   show-code-lang: true,       // 是否显示代码块的语言标签
   allow-page-breaks: true,    // 是否允许分页 (true: 传统多页文档, false: 无限长单页)
-  dark-mode: false,           // 亮暗主题开关，默认 false (亮色)
+  dark-mode: "auto",          // 亮暗主题：true 强制暗色、false 强制亮色、"auto"(默认) 跟随系统；PDF 下 auto 视为亮色
   font: ("LXGW WenKai", "Source Han Serif SC"), // 正文字体
   code-font: ("Cascadia Code", "LXGW WenKai"),  // 代码字体
   plain-image-alts: (),       // 使用默认样式（不套圆角边框）的图片 alt 列表
@@ -227,7 +228,7 @@
 ) = context {
   if target() == "html" {
     return web.render(
-      title: title, dark-mode: dark-mode, show-code-lang: show-code-lang,
+      title: title, description: description, dark-mode: dark-mode, show-code-lang: show-code-lang,
       equation-numbering: equation-numbering, plain-image-alts: plain-image-alts,
       math-renderer: math-renderer,
       font: font, code-font: code-font, doc,
@@ -235,12 +236,16 @@
   }
   show: show-cn-fakebold
 
+  // ---------- 文档元信息（PDF 元数据） ----------
+  set document(title: title, description: description)
+
   // ---------- 全局主题状态 ----------
   // 更新全局 dark-mode 状态，让 kbd/task/mark/frontmatter 等自动跟随
-  theme-state.update(if dark-mode { "dark" } else { "light" })
+  // （dark-mode 为 "auto" 时 PDF 无系统偏好可言，按亮色处理）
+  theme-state.update(if dark-mode == true { "dark" } else { "light" })
 
   // ---------- 配色（按 dark-mode 选择调色板） ----------
-  let colors = palette-colors(dark-mode: dark-mode)
+  let colors = palette-colors(dark-mode: dark-mode == true)
   let bg-page = colors.at("bg-page")
   let bg-write = colors.at("bg-write")
   let bg-soft = colors.at("bg-soft")

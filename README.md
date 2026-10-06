@@ -37,7 +37,7 @@ Lightmind 是一个山林森林绿调的中文文档主题，由同名 Typora �
 ## 特性
 
 - 🌲 山林森林绿配色，米黄纸面 + 深海军蓝代码块
-- 🌗 亮色 / 暗色双模式（自动跟随 `dark-mode` 参数）
+- 🌗 亮色 / 暗色双模式（`dark-mode` 参数，网页版可跟随系统）
 - 📝 Markdown 风格排版：YAML 前置元信息、警告块、任务列表、键位
 - 📐 圆角公式卡片、柔和底色目录、点状引导线
 - 🎨 中文伪粗体 / 伪斜体（基于 `@preview/cuti`）
@@ -90,13 +90,15 @@ typst init @preview/fernmind:0.1.0
 | 参数 | 说明 | 默认值 |
 | --- | --- | --- |
 | `title` | 文档标题（居中大标题），`none` 则不显示 | `none` |
-| `dark-mode` | 是否启用暗色主题 | `false` |
+| `description` | 文档描述（网页 `<meta>` 与 PDF 元信息） | 主题自带说明 |
+| `dark-mode` | 亮暗主题：`true` 暗色 / `false` 亮色 / `"auto"` 跟随系统（PDF 下 `"auto"` 视为亮色） | `"auto"` |
 | `font` | 正文字体（回退链） | `("LXGW WenKai", "Source Han Serif SC")` |
 | `code-font` | 代码字体（回退链） | `("Cascadia Code", "LXGW WenKai")` |
 | `show-code-lang` | 是否显示代码块语言标签 | `true` |
 | `allow-page-breaks` | 是否允许分页；`false` 时输出为无限长单页 | `true` |
 | `plain-image-alts` | 使用默认图片样式（不套圆角边框）的图片 `alt` 列表 | `()` |
 | `equation-numbering` | 行间公式自动编号格式（如 `"(1)"`）；`none` 不编号 | `none` |
+| `math-renderer` | 仅网页：公式渲染方式，`"native"`（原生 MathML）或 `"mathjax"` | `"native"` |
 
 ## 辅助函数
 

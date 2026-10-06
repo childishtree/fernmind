@@ -35,7 +35,7 @@ Lightmind is a forest-green Chinese document theme, adapted from the Typora them
 ## Features
 
 - 🌲 Forest-green palette with cream paper and deep navy code blocks
-- 🌗 Light / dark dual modes (controlled by the `dark-mode` option)
+- 🌗 Light / dark dual modes (via the `dark-mode` option; the web build can follow the system)
 - 📝 Markdown-style typesetting: YAML front matter, admonitions, task lists, keycaps
 - 📐 Rounded formula cards, soft-background table of contents, dotted leader lines
 - 🎨 Chinese fake-bold / fake-italic (powered by `@preview/cuti`)
@@ -88,13 +88,15 @@ All parameters of `lightmind()`:
 | Parameter | Description | Default |
 | --- | --- | --- |
 | `title` | Document title (centered, large); `none` hides it | `none` |
-| `dark-mode` | Whether to enable the dark theme | `false` |
+| `description` | Document description (web `<meta>` and PDF metadata) | theme default text |
+| `dark-mode` | Light/dark theme: `true` dark / `false` light / `"auto"` follow the system (`"auto"` means light in PDF) | `"auto"` |
 | `font` | Body font (fallback chain) | `("LXGW WenKai", "Source Han Serif SC")` |
 | `code-font` | Code font (fallback chain) | `("Cascadia Code", "LXGW WenKai")` |
 | `show-code-lang` | Whether to show the code block language label | `true` |
 | `allow-page-breaks` | Whether page breaks are allowed; `false` outputs a single endless page | `true` |
 | `plain-image-alts` | List of image `alt`s that use the default style (no rounded border) | `()` |
 | `equation-numbering` | Auto-numbering pattern for block equations (e.g. `"(1)"`); `none` disables | `none` |
+| `math-renderer` | Web only: formula rendering, `"native"` (MathML) or `"mathjax"` | `"native"` |
 
 ## Helper Functions
 

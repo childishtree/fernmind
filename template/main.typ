@@ -4,12 +4,14 @@
 // Apply the Lightmind theme.
 // 常用选项：
 // Common options:
-//   - dark-mode: true       启用暗色主题   // enable dark mode
+//   - dark-mode             亮暗主题：true 暗色 / false 亮色 / "auto"(默认) 跟随系统   // true = dark, false = light, "auto" (default) follows the system
 //   - font / code-font      自定义正文字体 / 代码字体   // custom body font / code font
 //   - allow-page-breaks     是否允许分页（false 输出无限长单页）   // allow page breaks (false outputs an infinitely long single page)
 //   - math-renderer         网页公式渲染："native"(默认, 原生 MathML) 或 "mathjax"(本地打包, 更一致)   // web math rendering: "native" (default) or "mathjax"
+//   - description           文档描述，用于网页 <meta name="description"> 与 PDF 元信息   // document description for web meta and PDF metadata
 #show: doc => lightmind(
   title: "Lightmind 主题文档",
+  // description: "自定义文档描述",
   allow-page-breaks: false,
   // dark-mode: true,
   doc,
