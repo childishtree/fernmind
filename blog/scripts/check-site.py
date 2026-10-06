@@ -244,6 +244,14 @@ for match in TABLE_ROW_PSEUDO.finditer(css):
     selector = css[boundary + 1 : match.end()].strip()
     if "thead" not in selector and "tbody" not in selector:
         errors.append(f"fernmind/article.css：选择器「{selector}」未限定 thead/tbody，表格行样式会串行")
+# 代码块语法高亮的 token 颜色必须全部被样式覆盖。Typst 给每个 token 写内联
+# style="color: #xxxxxx"，靠 CSS 的 span[style*="#xxxxxx"] 规则换成本主题配色；
+# 漏掉任何一种，该 token 就会在浅色代码块上保留原色，几乎看不清。
+TOKEN_COLOR = re.compile(r'style="color:\s*(#[0-9a-fA-F]{6})"')
+for post in posts:
+    for color in sorted(set(TOKEN_COLOR.findall(post.get("html") or ""))):
+        if f'span[style*="{color}"]' not in css:
+            errors.append(f"{post['slug']}：代码块 token 颜色 {color} 没有对应的样式覆盖规则")
 for resource in re.findall(r'url\(["\']?([^\)"\']+)', css):
     if not (root / resource.lstrip("/")).is_file():
         errors.append("缺少随站点提供的字体：" + resource)

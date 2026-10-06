@@ -107,6 +107,14 @@ for _match in re.finditer(r"tr:(?:first-child|last-child|nth-child\([^)]*\))", t
     if "thead" not in _selector and "tbody" not in _selector:
         errors.append("Table row selector not scoped to thead/tbody: " + _selector)
 
+# --- 代码块语法高亮的 token 颜色必须全部被样式覆盖 ---
+# Typst 给每个 token 写内联 style="color: #xxxxxx"，靠 CSS 的
+# span[style*="#xxxxxx"] 规则换成本主题配色。漏掉任何一种，该 token 就会在
+# 浅色代码块上保留原色（深色 token 落在浅底上几乎看不清）。
+for _color in sorted(set(re.findall(r'style="color:\s*(#[0-9a-fA-F]{6})"', text))):
+    if f'span[style*="{_color}"]' not in text:
+        errors.append("Code block token color has no style override: " + _color)
+
 for warning in warnings:
     print("warning: " + warning)
 if errors: raise SystemExit("\n".join(errors))
