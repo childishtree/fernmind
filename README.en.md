@@ -25,6 +25,7 @@
 - [Helper Functions](#helper-functions)
 - [Table of Contents](#table-of-contents)
 - [Full Demo](#full-demo)
+- [Static Blog](#static-blog)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -35,11 +36,12 @@ Lightmind is a forest-green Chinese document theme, adapted from the Typora them
 ## Features
 
 - 🌲 Forest-green palette with cream paper and deep navy code blocks
-- 🌗 Light / dark dual modes (controlled by the `dark-mode` option)
+- 🌗 Light / dark dual modes (via the `dark-mode` option; the web build can follow the system)
 - 📝 Markdown-style typesetting: YAML front matter, admonitions, task lists, keycaps
 - 📐 Rounded formula cards, soft-background table of contents, dotted leader lines
 - 🎨 Chinese fake-bold / fake-italic (powered by `@preview/cuti`)
 - 🧩 Reusable helpers: `frontmatter`, `mark`, `kbd`, `task`, `quote`
+- 🖥️ Optional HTML export, plus a `blog/` scaffold that turns `.typ` articles into a static blog
 
 ## Screenshots
 
@@ -88,13 +90,15 @@ All parameters of `lightmind()`:
 | Parameter | Description | Default |
 | --- | --- | --- |
 | `title` | Document title (centered, large); `none` hides it | `none` |
-| `dark-mode` | Whether to enable the dark theme | `false` |
+| `description` | Document description (web `<meta>` and PDF metadata) | theme default text |
+| `dark-mode` | Light/dark theme: `true` dark / `false` light / `"auto"` follow the system (`"auto"` means light in PDF) | `"auto"` |
 | `font` | Body font (fallback chain) | `("LXGW WenKai", "Source Han Serif SC")` |
 | `code-font` | Code font (fallback chain) | `("Cascadia Code", "LXGW WenKai")` |
 | `show-code-lang` | Whether to show the code block language label | `true` |
 | `allow-page-breaks` | Whether page breaks are allowed; `false` outputs a single endless page | `true` |
 | `plain-image-alts` | List of image `alt`s that use the default style (no rounded border) | `()` |
 | `equation-numbering` | Auto-numbering pattern for block equations (e.g. `"(1)"`); `none` disables | `none` |
+| `math-renderer` | Web only: formula rendering, `"native"` (MathML) or `"mathjax"` | `"native"` |
 
 ## Helper Functions
 
@@ -131,6 +135,26 @@ Insert a table of contents with `#outline(title: "目录")` (or `#outline(title:
   <source media="(prefers-color-scheme: dark)" srcset="test_lightmind_dark.png">
   <img alt="Lightmind full feature demo" src="test_lightmind_light.png">
 </picture>
+
+## Static Blog
+
+The `blog/` directory holds a scaffold that pre-renders Typst articles into a static blog. Write once, and the build produces three ways to read each article:
+
+- **Web body**: Typst's native HTML export — selectable text, MathML formulas, native anchors for the outline and footnotes, and copy buttons on code blocks.
+- **Original pages**: the same `.typ` exported as per-page SVG, preserving the fixed paper layout, with zoom from 75% to 250%.
+- **PDF / source**: downloadable alongside every article.
+
+It **does not copy the theme**. The build points Typst's `--root` at the repository root, so articles use `#import "/lightmind.typ"` and reuse `lightmind.typ` and `web/` directly — change the theme and the blog follows. The shell is built with [animal-island-ui](https://github.com/guokaigdg/animal-island-ui), with colours and fonts mapped back to Fernmind through CSS variables.
+
+```sh
+cd blog
+npm install
+npm run dev            # compile articles and start the dev server
+npm run build          # build into blog/dist/
+npm run check          # verify the output
+```
+
+Each article is a `.typ` plus a same-named `.json` in `content/posts/`; the JSON carries the title, excerpt, category and date. See [blog/README.md](blog/README.md) for details.
 
 ## Contributing
 

@@ -1,0 +1,9 @@
+{
+  "title": "用 Typst 写博客：一次写作，三种阅读方式",
+  "slug": "welcome",
+  "date": "2026-10-06",
+  "category": "Typst 排版",
+  "tags": ["Typst", "Fernmind", "静态站点"],
+  "excerpt": "把文章写成 .typ，构建时同时得到可选择的网页正文、保留纸面版式的原版页面和可下载的 PDF。内容只写一遍，三种阅读方式各自取用。",
+  "featured": true
+}

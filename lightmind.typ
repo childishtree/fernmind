@@ -5,6 +5,7 @@
 #import "@preview/cuti:0.4.0": fakeitalic, show-cn-fakebold
 // 类markdown中的表格语法
 #import "@preview/tablem:0.3.0": tablem
+#import "web/theme.typ" as web
 
 // =====================================================================
 // 调色板 (Palettes)
@@ -104,6 +105,7 @@
 
 // 键位样式（kbd）函数
 #let kbd(body) = context {
+  if target() == "html" { return web.kbd(body) }
   let colors = palette-colors(dark-mode: theme-state.get() == "dark")
   box(
     fill: colors.at("bg-soft"),
@@ -116,6 +118,7 @@
 
 // 任务列表项（checkbox）函数
 #let task(checked: false, body) = context {
+  if target() == "html" { return web.task(checked: checked, body) }
   let colors = palette-colors(dark-mode: theme-state.get() == "dark")
   grid(
     columns: (auto, 1fr),
@@ -139,6 +142,7 @@
 
 // 文本高亮函数
 #let mark(body) = context {
+  if target() == "html" { return web.mark(body) }
   let colors = palette-colors(dark-mode: theme-state.get() == "dark")
   box(
     fill: colors.at("bg-highlight"),
@@ -153,6 +157,12 @@
 // 用法：在文档顶部调用 #frontmatter(title: ..., author: ..., tags: (...))
 // 颜色自动跟随全局 dark-mode，无需传参
 #let frontmatter(..args) = context {
+  if target() == "html" {
+    let fields = args.named()
+    let banner = fields.at("banner", default: none)
+    if banner != none { fields.banner = (path(banner.at(0)), banner.at(1)) }
+    return web.frontmatter(..fields)
+  }
   let colors = palette-colors(dark-mode: theme-state.get() == "dark")
   let dict = args.named()
   
@@ -205,23 +215,37 @@
 
 #let lightmind(
   title: none,
+  description: "Fernmind 中文文档主题，保留山林绿配色、霞鹜文楷与明暗两种阅读模式。", // 文档描述（网页 <meta> 与 PDF 元信息）
   show-code-lang: true,       // 是否显示代码块的语言标签
   allow-page-breaks: true,    // 是否允许分页 (true: 传统多页文档, false: 无限长单页)
-  dark-mode: false,           // 亮暗主题开关，默认 false (亮色)
+  dark-mode: "auto",          // 亮暗主题：true 强制暗色、false 强制亮色、"auto"(默认) 跟随系统；PDF 下 auto 视为亮色
   font: ("LXGW WenKai", "Source Han Serif SC"), // 正文字体
   code-font: ("Cascadia Code", "LXGW WenKai"),  // 代码字体
   plain-image-alts: (),       // 使用默认样式（不套圆角边框）的图片 alt 列表
   equation-numbering: none,   // 行间（块级）公式自动编号格式，如 "(1)"；none 表示不编号
+  math-renderer: "native",    // 网页公式渲染： "native"(原生 MathML, 默认) 或 "mathjax"(本地打包, 更一致)
   doc,
-) = {
+) = context {
+  if target() == "html" {
+    return web.render(
+      title: title, description: description, dark-mode: dark-mode, show-code-lang: show-code-lang,
+      equation-numbering: equation-numbering, plain-image-alts: plain-image-alts,
+      math-renderer: math-renderer,
+      font: font, code-font: code-font, doc,
+    )
+  }
   show: show-cn-fakebold
+
+  // ---------- 文档元信息（PDF 元数据） ----------
+  set document(title: title, description: description)
 
   // ---------- 全局主题状态 ----------
   // 更新全局 dark-mode 状态，让 kbd/task/mark/frontmatter 等自动跟随
-  theme-state.update(if dark-mode { "dark" } else { "light" })
+  // （dark-mode 为 "auto" 时 PDF 无系统偏好可言，按亮色处理）
+  theme-state.update(if dark-mode == true { "dark" } else { "light" })
 
   // ---------- 配色（按 dark-mode 选择调色板） ----------
-  let colors = palette-colors(dark-mode: dark-mode)
+  let colors = palette-colors(dark-mode: dark-mode == true)
   let bg-page = colors.at("bg-page")
   let bg-write = colors.at("bg-write")
   let bg-soft = colors.at("bg-soft")

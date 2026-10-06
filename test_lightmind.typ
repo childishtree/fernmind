@@ -15,6 +15,7 @@
   // dark-mode: true,
   equation-numbering: "(1)",   // 启用后所有块级公式自动编号为 (1)(2)(3)...
   plain-image-alts: ("default",), // alt为default的使用默认图片样式
+  math-renderer: sys.inputs.at("math-renderer", default: "native"), // 构建时可用 --input math-renderer=mathjax 切换
   doc,
 )
 
@@ -58,7 +59,7 @@
 
 #highlight[这是高亮文本]，可以混合 #highlight[_斜体高亮_]。H#sub[2]O 是水的化学式，E = mc#super[2] 是质能方程。
 
-[这是一个链接](https://typora.io)，链接里的 `代码`，邮箱 #link("mailto:noreply@example.com")[noreply\@example.com]。
+#link("https://typora.io")[这是一个链接]，链接里的 `代码`，邮箱 #link("mailto:noreply@example.com")[noreply\@example.com]。
 
 = 引用块与警告块
 
@@ -253,7 +254,10 @@ $
 
 左对齐的图片：
 
-#image("lightmind-light.png", width: 40%)
+#image("lightmind-light.png", width: 40%, alt: "亮色主题预览")
+
+// 注：图片若省略 alt，网页版会以文件名主干自动兜底（如 lightmind-light），
+// 保证不产出缺少替代文本的 <img>；正式文档仍建议显式写出 alt。
 
 居中独立图片：
 
