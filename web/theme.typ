@@ -75,9 +75,16 @@
       html.a(class: "skip-link", href: "#document", "跳到正文")
       html.header(class: "site-toolbar", {
         html.a(class: "wordmark", href: "#document", "🍃 Fernmind")
-        html.div(class: "toolbar-actions", {
-          html.a(href: "https://github.com/childishtree/fernmind", "原项目")
-          html.button(type: "button", id: "theme-toggle", aria-label: "切换明暗主题", aria-pressed: dark-mode, "切换主题")
+        html.button(type: "button", id: "theme-toggle", aria-label: "切换明暗主题", aria-pressed: dark-mode, {
+          // 浅色模式显示月亮（点击切到深色），深色模式显示太阳。
+          // 用两个图标 + CSS 按 data-theme 切换，JS 无需改动 DOM 内容。
+          html.elem("svg", attrs: (class: "icon-moon", viewBox: "0 0 24 24", width: "18", height: "18", "aria-hidden": "true", fill: "none", stroke: "currentColor", "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round"), {
+            html.elem("path", attrs: (d: "M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"))
+          })
+          html.elem("svg", attrs: (class: "icon-sun", viewBox: "0 0 24 24", width: "18", height: "18", "aria-hidden": "true", fill: "none", stroke: "currentColor", "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round"), {
+            html.elem("circle", attrs: (cx: "12", cy: "12", r: "4"))
+            html.elem("path", attrs: (d: "M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"))
+          })
         })
       })
       html.main(class: "paper", id: "document", {
@@ -103,7 +110,10 @@
       })
       html.footer(class: "site-footer", {
         html.p("Fernmind / Lightmind · © 2026 Childish_tree · MIT")
-        html.a(href: "fernmind-web-source.zip", "下载网页项目")
+        html.div(class: "footer-links", {
+          html.a(href: "https://github.com/childishtree/fernmind", "原项目")
+          html.a(href: "fernmind-web-source.zip", "下载网页项目")
+        })
       })
       // 可选：用本地打包的 MathJax 把 Typst 导出的 MathML 重新排版为 SVG。
       // 配置脚本必须先于 MathJax 主脚本执行，故两者顺序固定。
